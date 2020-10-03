@@ -44,7 +44,12 @@ public class Inicio {
 
                     double debitarValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
 
-                    conta1.debitarDinheiro(debitarValor);
+                    if (debitarValor > conta1.consultarSaldo()) {
+                        JOptionPane.showMessageDialog(null, "Este valor não pode ser debitado, tente outro.");
+                    }
+                    else {
+                        conta1.debitarDinheiro(debitarValor);
+                    }
 
                     break;
                 default: // Operação não encontrada
