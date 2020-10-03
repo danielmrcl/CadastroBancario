@@ -14,4 +14,7 @@ public class Conta {
     public void debitarDinheiro(double valor) {
         this.saldo_conta -= valor;
     }
+    public void transferencia(){
+        
+    }
 }
