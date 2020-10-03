@@ -21,7 +21,7 @@ public class Inicio {
         );
         switch(menuEntrada){
             case 1: // Falta começar
-            case 2:
+            case 2: // Registro
                 String log;
                 String senh;
                 String Agn;
@@ -33,8 +33,7 @@ public class Inicio {
 
                 // Escolhendo uma operação do menu
                 int menuPrincipal = 0;
-
-                do {
+                do { // Aqui que começa o menu principal
                 // Desenhando o menu principal
                 menuPrincipal = Integer.parseInt(
                     JOptionPane.showInputDialog(
@@ -83,7 +82,7 @@ public class Inicio {
                     break;
                     }
                 } while (menuPrincipal != 0);
-            case 0: 
+            case 0: // Aqui encerra o programa
                 JOptionPane.showMessageDialog(null, "Saindo...");
                 break;
         }
