@@ -32,6 +32,7 @@ public class Inicio {
                     senh1 = JOptionPane.showInputDialog(null, "Senha: ");
 
                     login1.Logar(log1, senh1);
+                
 
                     // TODO: para gerenciar a conta precisa estar logado.
 
@@ -50,7 +51,7 @@ public class Inicio {
                         "0 - Voltar"
                         )
                     );
-
+                    int a = Integer.parseInt(conta1.verificalogin(log1)); //Correção
                     switch (menuPrincipal) {
                         case 0: // Operação 0 - Voltar
 
@@ -59,25 +60,25 @@ public class Inicio {
                             break;
                         case 1: // Operação 1 - Consultar saldo
 
-                            JOptionPane.showMessageDialog(null, "Seu saldo atual é de R$" + conta1.consultarSaldo());
+                            JOptionPane.showMessageDialog(null, "Seu saldo atual é de R$" + conta1.consultarSaldo(a));
 
                             break;
                         case 2: // Operação 2 - Depositar
 
                             double depositoValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:"));
 
-                            conta1.depositarDinheiro(depositoValor);
+                            conta1.depositarDinheiro(depositoValor, a);
 
                             break;
                         case 3: // Operação 3 - debitarDinheiro
 
                             double debitarValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
 
-                            if (debitarValor > conta1.consultarSaldo()) {
+                            if (debitarValor > conta1.consultarSaldo(a)) {
                                 JOptionPane.showMessageDialog(null, "Este valor não pode ser debitado, tente outro.");
                             }
                             else {
-                                conta1.debitarDinheiro(debitarValor);
+                                conta1.debitarDinheiro(debitarValor, a);
                             }
 
                             break;

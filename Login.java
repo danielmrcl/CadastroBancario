@@ -4,7 +4,7 @@ public class Login {
     public String login[] = new String[10];
     public String senha[] = new String[10];
     public String agencia[] = new String[10];
-    public Double saldo[] = new Double[10];
+    public int saldo[] = new int[10];
 
     public void Cadastro(String log1, String senh1, String agn1) {
         boolean statusCadastrado = false;
@@ -20,7 +20,7 @@ public class Login {
                 login[i] = log1;
                 senha[i] = senh1;
                 agencia[i] = agn1;
-                saldo[i] = 0.0;
+                saldo[i] = 0;
                 statusCadastrado = true;
 
                 break;
@@ -57,7 +57,6 @@ public class Login {
                     "\nLogin: " + login[i] +
                     "\nAgencia: " + agencia[i]
                 );
-
                 break;
             }
             // a senha não confere
@@ -66,9 +65,9 @@ public class Login {
             }
         }
 
-        // falha no login
-        if (!statusLogado) {
-            JOptionPane.showMessageDialog(null, "O login não foi realizado! Verifique se sua conta esta cadastrada!");
-        }
+            // falha no login
+            if (!statusLogado) {
+                JOptionPane.showMessageDialog(null, "O login não foi realizado! Verifique se sua conta esta cadastrada!");
+            }
     }
 }
