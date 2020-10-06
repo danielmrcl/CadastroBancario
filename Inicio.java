@@ -18,8 +18,10 @@ public class Inicio {
                 "1 - Login \n" +
                 "2 - Registrar \n" +
                 "0 - Sair"
+
                 )
-            );
+                );
+
 
             switch(menuEntrada){
                 case 1: // Login
@@ -115,6 +117,7 @@ public class Inicio {
                 case 0: // Sair
                     JOptionPane.showMessageDialog(null, "Saindo...");
                     break;
+
             }
         } while (menuEntrada != 0);
     }

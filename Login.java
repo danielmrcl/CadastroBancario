@@ -69,5 +69,5 @@ public class Login {
             if (!statusLogado) {
                 JOptionPane.showMessageDialog(null, "O login não foi realizado! Verifique se sua conta esta cadastrada!");
             }
-    }
+        }
 }
