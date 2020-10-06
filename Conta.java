@@ -5,26 +5,24 @@ public class Conta {
     public Login login = new Login();
     public int j;
     public String verificalogin(String log1){
-        int i = 0;
-        while (true){
+        for(int i = 0; i < 10; i++){
             if (log1 == login.login[i]){
                 j = i;
                 return Integer.toString(j);
             }
-            i += 1;
-            continue;
         }
+        return Integer.toString(j);
     }
     public int consultarSaldo(int a){
         return this.login.saldo[a];
     }
-    public void depositarDinheiro(double valor, int a) {
+    public void depositarDinheiro(int valor, int a) {
         this.login.saldo[a] += valor;
     }
-    public void debitarDinheiro(double valor, int a) {
+    public void debitarDinheiro(int valor, int a) {
         this.login.saldo[a] -= valor;
     }
-    public void transferencia(String Agn, Double Din){
+    public void transferencia(String Agn, int Din){
         for(int i = 0; i < login.agencia.length; i++){
             if(login.agencia[i] == Agn){
                 this.login.saldo[i] += Din;

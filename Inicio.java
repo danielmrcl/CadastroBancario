@@ -53,7 +53,9 @@ public class Inicio {
                         "0 - Voltar"
                         )
                     );
-                    int a = Integer.parseInt(conta1.verificalogin(log1)); //Correção
+                    
+                    int a = Integer.parseInt(conta1.verificalogin(log1));
+                    
                     switch (menuPrincipal) {
                         case 0: // Operação 0 - Voltar
 
@@ -67,14 +69,14 @@ public class Inicio {
                             break;
                         case 2: // Operação 2 - Depositar
 
-                            double depositoValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:"));
+                            int depositoValor = Integer.parseInt(JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:"));
 
                             conta1.depositarDinheiro(depositoValor, a);
 
                             break;
                         case 3: // Operação 3 - debitarDinheiro
 
-                            double debitarValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
+                            int debitarValor = Integer.parseInt(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
 
                             if (debitarValor > conta1.consultarSaldo(a)) {
                                 JOptionPane.showMessageDialog(null, "Este valor não pode ser debitado, tente outro.");
@@ -88,7 +90,7 @@ public class Inicio {
                             
                             String Agn = JOptionPane.showInputDialog("Por favor, me informe a agência para qual você vai transferir o dinheiro: ");
                             String Dins = JOptionPane.showInputDialog("Agora, informe o valor a ser transferido: ");
-                            conta1.transferencia(Agn, Double.parseDouble(Dins));
+                            conta1.transferencia(Agn, Integer.parseInt(Dins));
                             break;     
                         default: // Operação não encontrada
 
