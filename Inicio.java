@@ -1,12 +1,10 @@
-// package contabancaria;
-
 import javax.swing.JOptionPane;
 
 public class Inicio {
     public static void main(String[] args) {
+
         // Instanciando uma conta
         Conta conta1 = new Conta();
-        Login login1 = new Login();
 
         int menuEntrada = 0;
 
@@ -17,26 +15,28 @@ public class Inicio {
                 "Escolha um das opções abaixo: \n" +
                 "1 - Login \n" +
                 "2 - Registrar \n" +
+                "3 - Listar Cadastros\n" +
                 "0 - Sair"
-
                 )
             );
 
-
             switch(menuEntrada){
                 case 1: // Login
-                    String log1;
-                    String senh1;
+                    conta1.statusLogado = false;
 
                     JOptionPane.showMessageDialog(null, "Já que escolheu logar, vamos lá.");
 
-                    log1 = JOptionPane.showInputDialog(null, "Login: ");
-                    senh1 = JOptionPane.showInputDialog(null, "Senha: ");
+                    String log1 = JOptionPane.showInputDialog(null, "Login: ");
+                    String senh1 = JOptionPane.showInputDialog(null, "Senha: ");
 
-                    login1.Logar(log1, senh1);
+                    conta1.Logar(log1, senh1);
 
+                    // quebra a operação se o login não foi ralizado com sucesso
+                    if (!conta1.statusLogado) {
+                        break;
+                    }
 
-                    // TODO: para gerenciar a conta precisa estar logado.
+                    System.out.println(conta1.posicaoLogin); // DEBUG
 
                     // Escolhendo uma operação do menu
                     int menuPrincipal = 0;
@@ -54,43 +54,64 @@ public class Inicio {
                         )
                     );
 
-                    int a = Integer.parseInt(conta1.verificalogin(log1));
-
                     switch (menuPrincipal) {
-                        case 0: // Operação 0 - Voltar
-
-                            JOptionPane.showMessageDialog(null, "Voltando...");
-
-                            break;
                         case 1: // Operação 1 - Consultar saldo
 
-                            JOptionPane.showMessageDialog(null, "Seu saldo atual é de R$" + conta1.consultarSaldo(a));
+                            JOptionPane.showMessageDialog(null,
+                                "Seu saldo atual é de R$" + conta1.consultarSaldo(conta1.posicaoLogin)
+                            );
 
                             break;
                         case 2: // Operação 2 - Depositar
 
-                            int depositoValor = Integer.parseInt(JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:"));
+                            double depositoValor = Double.parseDouble(
+                                JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:")
+                            );
 
-                            conta1.depositarDinheiro(depositoValor, a);
+                            conta1.depositarDinheiro(depositoValor, conta1.posicaoLogin);
+
+                            JOptionPane.showMessageDialog(null,
+                                "R$" + depositoValor + " depositado na conta " + conta1.agencia[conta1.posicaoLogin] + "!"
+                            );
 
                             break;
-                        case 3: // Operação 3 - debitarDinheiro
+                        case 3: // Operação 3 - Debitar
 
-                            int debitarValor = Integer.parseInt(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
+                            double debitarValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
 
-                            if (debitarValor > conta1.consultarSaldo(a)) {
-                                JOptionPane.showMessageDialog(null, "Este valor não pode ser debitado, tente outro.");
+                            if (debitarValor > conta1.consultarSaldo(conta1.posicaoLogin)) {
+                                JOptionPane.showMessageDialog(null, "Este valor excede o saldo da conta, tente outro.");
                             }
                             else {
-                                conta1.debitarDinheiro(debitarValor, a);
+                                conta1.debitarDinheiro(debitarValor, conta1.posicaoLogin);
                             }
+
+                            JOptionPane.showMessageDialog(null,
+                                "R$" + debitarValor + " debitado da conta " + conta1.agencia[conta1.posicaoLogin] + "!"
+                            );
 
                             break;
                         case 4: // Operação 4 - Transferência
 
-                            String Agn = JOptionPane.showInputDialog("Por favor, me informe a agência para qual você vai transferir o dinheiro: ");
-                            String Dins = JOptionPane.showInputDialog("Agora, informe o valor a ser transferido: ");
-                            conta1.transferencia(Agn, Integer.parseInt(Dins));
+                            int agn = Integer.parseInt(
+                                JOptionPane.showInputDialog("Por favor, me informe a AGÊNCIA para qual você vai transferir o dinheiro: ")
+                            );
+                            double transferirValor = Double.parseDouble(
+                                JOptionPane.showInputDialog("Agora, informe o valor a ser transferido: ")
+                            );
+
+                            if (transferirValor > conta1.consultarSaldo(conta1.posicaoLogin)) {
+                                JOptionPane.showMessageDialog(null, "Este valor excede o saldo da conta, tente outro");
+                                break;
+                            }
+
+                            conta1.transferencia(agn, conta1.posicaoLogin, transferirValor);
+
+                            break;
+                        case 0: // Operação 0 - Voltar
+
+                            JOptionPane.showMessageDialog(null, "Voltando...");
+
                             break;
                         default: // Operação não encontrada
 
@@ -102,44 +123,40 @@ public class Inicio {
 
                     break;
                 case 2: // Registrar
-                    String log2;
-                    String senh2;
-                    String agn2;
-
                     JOptionPane.showMessageDialog(null, "Já que escolheu ser cadastrado, vamos lá.");
 
-                    log2 = JOptionPane.showInputDialog(null, "Login: ");
-                    senh2 = JOptionPane.showInputDialog(null, "Senha: ");
-                    agn2 = JOptionPane.showInputDialog(null, "Agência: ");
+                    String log2 = JOptionPane.showInputDialog(null, "Login (letras e números): ");
+                    String senh2 = JOptionPane.showInputDialog(null, "Senha (letras e números): ");
+                    int agn2 = Integer.parseInt(
+                        JOptionPane.showInputDialog(null, "Agência (apenas números): ")
+                    );
 
-                    login1.Cadastro(log2, senh2, agn2);
+                    conta1.Cadastro(log2, senh2, agn2);
 
-                            conta1.depositarDinheiro(depositoValor);
+                    break;
+                case 3: // Listar Cadastros
+                    String cadastros = "↓ login / agencia ↓\n";
 
-                            break;
-                        case 3: // Operação 3 - debitarDinheiro
-
-                            double debitarValor = Double.parseDouble(JOptionPane.showInputDialog("Digite o valor a ser debitado da conta:"));
-
-                            if (debitarValor > conta1.consultarSaldo()) {
-                                JOptionPane.showMessageDialog(null, "Este valor não pode ser debitado, tente outro.");
-                            }
-                            else {
-                                conta1.debitarDinheiro(debitarValor);
-                            }
-
-                            break;
-                        default: // Operação não encontrada
-
-                            JOptionPane.showMessageDialog(null, "Operação Inválida, tente outra.");
-
-                            break;
+                    for (int i = 0; i < conta1.login.length; i++) {
+                        // pular se o login for vazio
+                        if (conta1.login[i] == null) {
+                            continue;
                         }
-                    } while (menuPrincipal != 0);
+
+                        cadastros = cadastros + "  " + conta1.login[i] + " / " + conta1.agencia[i] + "\n";
+                    }
+
+                    JOptionPane.showMessageDialog(null, cadastros);
 
                     break;
                 case 0: // Sair
                     JOptionPane.showMessageDialog(null, "Saindo...");
+
+                    break;
+                default: // Operação não encontrada
+
+                    JOptionPane.showMessageDialog(null, "Operação Inválida, tente outra.");
+
                     break;
             }
         } while (menuEntrada != 0);
