@@ -1,9 +1,10 @@
 import javax.swing.JOptionPane;
 
 public class Login {
-    private String login[] = new String[10];
-    private String senha[] = new String[10];
-    private String agencia[] = new String[10];
+    public String login[] = new String[10];
+    public String senha[] = new String[10];
+    public String agencia[] = new String[10];
+    public int saldo[] = new int[10];
 
     public void Cadastro(String log1, String senh1, String agn1) {
         boolean statusCadastrado = false;
@@ -19,7 +20,7 @@ public class Login {
                 login[i] = log1;
                 senha[i] = senh1;
                 agencia[i] = agn1;
-
+                saldo[i] = 0;
                 statusCadastrado = true;
 
                 break;

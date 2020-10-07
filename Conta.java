@@ -1,20 +1,35 @@
 // package contabancaria;
+import javax.swing.JOptionPane;
 
 public class Conta {
-    private double saldo_conta = 0.0;
-
-    public double consultarSaldo() {
-        return this.saldo_conta;
+    public Login login = new Login();
+    public int j;
+    public String verificalogin(String log1){
+        for(int i = 0; i < 10; i++){
+            if (log1 == login.login[i]){
+                j = i;
+                return Integer.toString(j);
+            }
+        }
+        return Integer.toString(j);
     }
-
-    public void depositarDinheiro(double valor) {
-        this.saldo_conta += valor;
+    public int consultarSaldo(int a){
+        return this.login.saldo[a];
     }
-
-    public void debitarDinheiro(double valor) {
-        this.saldo_conta -= valor;
+    public void depositarDinheiro(int valor, int a) {
+        this.login.saldo[a] += valor;
     }
-    public void transferencia(){
-        
+    public void debitarDinheiro(int valor, int a) {
+        this.login.saldo[a] -= valor;
     }
+    public void transferencia(String Agn, int Din){
+        for(int i = 0; i < login.agencia.length; i++){
+            if(login.agencia[i] == Agn){
+                this.login.saldo[i] += Din;
+                JOptionPane.showMessageDialog(null, "O dinheiro foi transferido!");
+            }else{
+                JOptionPane.showMessageDialog(null, "Deu falha");
+            }
+        } 
+    } 
 }
