@@ -1,35 +1,118 @@
-// package contabancaria;
 import javax.swing.JOptionPane;
 
 public class Conta {
-    public Login login = new Login();
-    public int j;
-    public String verificalogin(String log1){
-        for(int i = 0; i < 10; i++){
-            if (log1 == login.login[i]){
-                j = i;
-                return Integer.toString(j);
+
+    public String login[] = new String[10];
+    private String senha[] = new String[10];
+    public int agencia[] = new int[10];
+    private double saldo[] = new double[10];
+
+    public boolean statusLogado = false;
+    public int posicaoLogin;
+
+    public void Cadastro(String log1, String senh1, int agn1) {
+        boolean statusCadastrado = false;
+
+        // o seguinte loop percorre cada elemento do array e:
+
+        for (int i = 0; i < login.length; i++) {
+            // fecha se o login ou agencia já existir
+            if (log1.equalsIgnoreCase(login[i]) || agn1 == agencia[i]) {
+                break;
+            }
+
+            // adiciona os dados log, senh e agn no primeiro elemento vazio que encontrar
+            if (login[i] == null && senha[i] == null) {
+                login[i] = log1;
+                senha[i] = senh1;
+                agencia[i] = agn1;
+                saldo[i] = 0;
+                statusCadastrado = true;
+
+                break;
             }
         }
-        return Integer.toString(j);
+
+        if (statusCadastrado) {
+            JOptionPane.showMessageDialog(null, "VOCÊ FOI CADASTRADO");
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "O CADASTRO NÃO FOI REALIZADO, verifique se o usuario ou a agencia já existem");
+        }
     }
-    public int consultarSaldo(int a){
-        return this.login.saldo[a];
-    }
-    public void depositarDinheiro(int valor, int a) {
-        this.login.saldo[a] += valor;
-    }
-    public void debitarDinheiro(int valor, int a) {
-        this.login.saldo[a] -= valor;
-    }
-    public void transferencia(String Agn, int Din){
-        for(int i = 0; i < login.agencia.length; i++){
-            if(login.agencia[i] == Agn){
-                this.login.saldo[i] += Din;
-                JOptionPane.showMessageDialog(null, "O dinheiro foi transferido!");
-            }else{
-                JOptionPane.showMessageDialog(null, "Deu falha");
+
+    public void Logar(String log2, String senh2){
+        boolean confereUsuario = false;
+        boolean confereSenha = false;
+
+        for (int i = 0; i < login.length; i++) {
+            // pular se o espaço do array estiver vazio
+            if (login[i] == null) { continue; }
+
+            // conferindo o usuario e a senha
+            confereUsuario = log2.equalsIgnoreCase(login[i]);
+            confereSenha = senh2.equals(senha[i]);
+
+            // o usuario e a senha conferem
+            if (confereUsuario && confereSenha) {
+                statusLogado = true;
+                posicaoLogin = i;
+
+                JOptionPane.showMessageDialog(null,
+                    "LOGADO COM SUCESSO NA CONTA:"+
+                    "\nLogin: " + login[i] +
+                    "\nAgencia: " + agencia[i]
+                );
+
+                break;
             }
-        } 
-    } 
+            // a senha não confere
+            else if (confereUsuario && !confereSenha) {
+                JOptionPane.showMessageDialog(null, "Senha incorreta!");
+            }
+        }
+
+        // falha no login
+        if (!statusLogado) {
+            JOptionPane.showMessageDialog(null, "O login não foi realizado! Verifique se sua conta esta cadastrada!");
+        }
+    }
+
+    public double consultarSaldo(int login) {
+        return saldo[login];
+    }
+
+    public void depositarDinheiro(double valor, int login) {
+        this.saldo[login] += valor;
+    }
+
+    public void debitarDinheiro(double valor, int login) {
+        this.saldo[login] -= valor;
+    }
+
+    public void transferencia(int agenciaDestino, int posicaoLogin, double valor) {
+        boolean agenciaEncontrada = false;
+
+        // encontra a agencia correspodente
+        for(int i = 0; i < agencia.length; i++) {
+            if (agencia[i] == agenciaDestino) {
+                agenciaEncontrada = true;
+
+                // debita o valor do remetente e deposita no destinatario
+                this.saldo[posicaoLogin] -= valor;
+                this.saldo[i] += valor;
+
+                JOptionPane.showMessageDialog(null,
+                    "Foi transferida a quantida de R$" + valor + "!"
+                );
+
+                break;
+            }
+        }
+
+        if (!agenciaEncontrada) {
+            JOptionPane.showMessageDialog(null, "Este numero e agencia não existe!");
+        }
+    }
+
 }
