@@ -1,9 +1,9 @@
-package app;
+package app.conta;
 
-public class Conta {
+public abstract class Conta {
 
     private int agencia;
-    private double saldo;
+    protected double saldo;
 
     public Conta(int agencia) {
         this.agencia = agencia;
@@ -12,15 +12,6 @@ public class Conta {
 
     public void depositarDinheiro(double valor) {
         this.saldo += valor;
-    }
-
-    public void debitarDinheiro(double valor) {
-        this.saldo -= valor;
-    }
-
-    public void transferirDinheiro(Conta contaDestino, double valor) {
-        this.debitarDinheiro(valor);
-        contaDestino.depositarDinheiro(valor);
     }
 
     public int getAgencia() {

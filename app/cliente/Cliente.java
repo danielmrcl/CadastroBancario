@@ -1,14 +1,18 @@
-package app;
+package app.cliente;
+
+import app.conta.*;
 
 public class Cliente {
     private Conta conta;
     private String login;
     private String senha;
+    private int tipoConta;
 
-    public Cliente(Conta conta, String login, String senha) {
-        this.setConta(conta);;
-        this.setLogin(login);;
-        this.setSenha(senha);;
+    public Cliente(String login, String senha, Conta conta, int tipoConta) {
+        this.setLogin(login);
+        this.setSenha(senha);
+        this.setTipoConta(tipoConta);
+        this.setConta(conta);
     }
 
     public Conta getConta() {
@@ -16,7 +20,7 @@ public class Cliente {
     }
 
     public void setConta(Conta conta) {
-        this.conta = conta;
+       this.conta = conta;
     }
 
     public String getLogin() {
@@ -33,5 +37,13 @@ public class Cliente {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public int getTipoConta() {
+        return this.tipoConta;
+    }
+
+    public void setTipoConta(int tipoConta) {
+        this.tipoConta = tipoConta;
     }
 }

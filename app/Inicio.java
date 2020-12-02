@@ -2,11 +2,14 @@ package app;
 
 import javax.swing.JOptionPane;
 
+import app.cliente.*;
+import app.conta.*;
+
 public class Inicio {
-
     // lista de clientes criada de modo global
-    public static Cliente[] listaClientes = new Cliente[20];
+    public static Cliente[] listaClientes = new Cliente[10];
 
+    // metodo principal
     public static void main(String[] args) {
 
         int menuEntrada = 0;
@@ -28,11 +31,11 @@ public class Inicio {
                 case 1: // Login
 
                     JOptionPane.showMessageDialog(null, "Logando...");
-                    String login1 = JOptionPane.showInputDialog(null, "Login (letras e números): ");
-                    String senha1 = JOptionPane.showInputDialog(null, "Senha (letras e números): ");
+                    String login = JOptionPane.showInputDialog(null, "Login (letras e números): ");
+                    String senha = JOptionPane.showInputDialog(null, "Senha (letras e números): ");
 
                     // verificando o login e guardando a posição
-                    int posicaoCliente = logarCliente(login1, senha1);
+                    int posicaoCliente = logarCliente(login, senha);
 
                     if (posicaoCliente >= 0) {
                         JOptionPane.showMessageDialog(null, "Logado com sucesso no login " + listaClientes[posicaoCliente].getLogin());
@@ -50,6 +53,7 @@ public class Inicio {
                     do {
                         menuConta = Integer.parseInt(JOptionPane.showInputDialog(
                         "Agencia: " + clienteLogado.getConta().getAgencia() + "\n" +
+                        "Tipo conta: " + clienteLogado.getTipoConta() + "\n" +
                         "Login: " + clienteLogado.getLogin() + "\n" +
                         "Saldo: " + clienteLogado.getConta().getSaldo() + "\n" +
                         "\n" +
@@ -84,6 +88,12 @@ public class Inicio {
 
                                 break;
                             case 2: // Debitar
+
+                                // verificando tipo de conta
+                                if (clienteLogado.getTipoConta() == 2) {
+                                    JOptionPane.showMessageDialog(null, "Você não pode debitar em uma conta tipo 2");
+                                    break;
+                                }
                                 
                                 // valor a ser debitado
                                 double debitarValor = Double.parseDouble(JOptionPane.showInputDialog(
@@ -93,11 +103,12 @@ public class Inicio {
                                 // verificando se o valor digitado excede o valor em conta
                                 if (debitarValor > clienteLogado.getConta().getSaldo()) {
                                     JOptionPane.showMessageDialog(null, "Este valor excede o saldo da conta, tente outro.");
+                                    break;
                                 }
-                                // debitando se não exceder
-                                else {
-                                    clienteLogado.getConta().debitarDinheiro(debitarValor);
-                                }
+
+                                // converte a conta para o tipo 1 para realizar a operação de debito
+                                ContaTipo1 contaClienteLogadoDebitar = (ContaTipo1) clienteLogado.getConta();
+                                contaClienteLogadoDebitar.debitarDinheiro(debitarValor);
 
                                 // mensagen de concluído
                                 JOptionPane.showMessageDialog(null,
@@ -106,6 +117,12 @@ public class Inicio {
 
                                 break;
                             case 3: // Transferência
+
+                                // verificando e convertendo o tipo da conta
+                                if (clienteLogado.getTipoConta() == 1) {
+                                    JOptionPane.showMessageDialog(null, "Você não pode realizar transferência de uma conta tipo 1");
+                                    break;
+                                }
                                 
                                 // agencia para qual será transferido o dinheiro
                                 int agenciaDestino = Integer.parseInt(JOptionPane.showInputDialog(
@@ -125,18 +142,18 @@ public class Inicio {
                                 // variavel para validar a transferencia
                                 boolean transferidoSucesso = false;
 
-                                // varrendo a lista de contas
+                                // procurar a conta de destino
                                 for (int i = 0; i < listaClientes.length; i++) {
-                                    // pular se a posição for nula
                                     if (listaClientes[i] == null) { continue; }
 
-                                    // confirmando a agencia e armazenando a conta de destino
+                                    // confirmando a agencia
                                     if (listaClientes[i].getConta().getAgencia() == agenciaDestino) {
                                         Conta contaDestino = listaClientes[i].getConta();
-                                        transferidoSucesso = true;
 
-                                        // transferindo o dinheiro para a conta de destino
-                                        clienteLogado.getConta().transferirDinheiro(contaDestino, transferirValor);
+                                        // convertendo o tipo da conta e transferindo o dinheiro para a conta de destino
+                                        ContaTipo2 contaClienteLogadoTransfeir = (ContaTipo2) clienteLogado.getConta();
+                                        contaClienteLogadoTransfeir.transferirDinheiro(contaDestino, transferirValor);
+                                        transferidoSucesso = true;
 
                                         break;
                                     }
@@ -166,19 +183,24 @@ public class Inicio {
 
                     break;
                 case 2: // Cadastrar
-                    
                     JOptionPane.showMessageDialog(null, "Cadastrando...");
-                    String login2 = JOptionPane.showInputDialog(null, "Login (letras e números): ");
-                    String senha2 = JOptionPane.showInputDialog(null, "Senha (letras e números): ");
-                    int agencia2 = Integer.parseInt(
-                        JOptionPane.showInputDialog(null, "Agência (apenas números): ")
-                    );
 
-                    boolean cadastradoSucesso = cadastrarCliente(agencia2, login2, senha2);
+                    // escolher o tipo de conta
+                    int tipoConta = Integer.parseInt(JOptionPane.showInputDialog(
+                        "Tipo de Conta:" + "\n" +
+                        "1 - Conta Deposito e Saque" + "\n" +
+                        "2 - Conta Deposito e Transferencia"
+                    ));
+
+                    String loginCadastro = JOptionPane.showInputDialog("Login (letras e números)");
+                    String senhaCadastro = JOptionPane.showInputDialog("Senha (letras e números)");
+                    int agenciaCadastro = Integer.parseInt(JOptionPane.showInputDialog("Agência (4 dígitos)"));
+
+                    boolean cadastradoSucesso = cadastrarCliente(agenciaCadastro, loginCadastro, senhaCadastro, tipoConta);
 
                     // confirmação de cadastro
                     if (cadastradoSucesso) {
-                        JOptionPane.showMessageDialog(null, "Usuario " + login2 + " cadastrado com sucesso!!");
+                        JOptionPane.showMessageDialog(null, "Usuario " + loginCadastro + " cadastrado com sucesso!!");
                     }
                     else {
                         JOptionPane.showMessageDialog(null, "Erro no cadastro, verifique se este login ou agencia ja existe");
@@ -186,7 +208,7 @@ public class Inicio {
 
                     break;
                 case 3: // Listar Cadastros
-                    String cadastros = "↓ login / agencia ↓\n";
+                    String cadastros = "↓ login / agencia / tipo conta ↓\n";
                     
                     for (int i = 0; i < listaClientes.length; i++) {
                         // pular se o login for vazio
@@ -194,7 +216,9 @@ public class Inicio {
                             continue;
                         }
 
-                        cadastros = cadastros + "  " + listaClientes[i].getLogin() + " / " + listaClientes[i].getConta().getAgencia() + "\n";
+                        cadastros += listaClientes[i].getLogin() + "  /  ";
+                        cadastros += listaClientes[i].getConta().getAgencia() + "  /  Tipo: ";
+                        cadastros += listaClientes[i].getTipoConta() + "\n";
                     }
 
                     JOptionPane.showMessageDialog(null, cadastros);
@@ -210,26 +234,35 @@ public class Inicio {
 
     }
 
-    // metodo para cadastrar novos clientes
-    public static boolean cadastrarCliente(int agencia, String login, String senha) {
+    // metodo para cadastrar clientes pf
+    public static boolean cadastrarCliente(int agencia, String login, String senha, int tipoConta) {
         // variavel de confirmação de cadastro
         boolean cadastradoSucesso = false;
 
+        // verificar se esta agencia ou cpf já existe
         for (int i = 0; i < listaClientes.length; i++) {
-            // pular se a posição for nula
             if (listaClientes[i] == null) { continue; }
-
-            // verificar se esta agencia ou login já existe
+            
             if (agencia == listaClientes[i].getConta().getAgencia() || login.equalsIgnoreCase(listaClientes[i].getLogin())) {
                 return cadastradoSucesso;
             }
         }
 
-        // criar uma nova conta para o cliente
-        Conta conta = new Conta(agencia);
+        // criar uma conta tipo 1 ou tipo 2 conforme passado por parâmetro
+        Conta conta;
+
+        if (tipoConta == 1) {
+            conta = new ContaTipo1(agencia);
+        }
+        else if (tipoConta == 2) {
+            conta = new ContaTipo2(agencia);
+        }
+        else {
+            return cadastradoSucesso = false;
+        }
         
-        // instanciar um cliente
-        Cliente cliente = new Cliente(conta, login, senha);
+        // instanciar um cliente com a conta criada
+        Cliente cliente = new Cliente(login, senha, conta, tipoConta);
 
         // adiciona o cliente na lista de clientes
         for (int i = 0; i < listaClientes.length; i++) {
