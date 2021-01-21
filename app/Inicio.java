@@ -1,5 +1,8 @@
 package app;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import app.cliente.*;
@@ -7,7 +10,7 @@ import app.conta.*;
 
 public class Inicio {
     // lista de clientes criada de modo global
-    public static Cliente[] listaClientes = new Cliente[10];
+    public static List<Cliente> listaClientes = new LinkedList<>();
 
     // metodo principal
     public static void main(String[] args) {
@@ -35,17 +38,15 @@ public class Inicio {
                     String senha = JOptionPane.showInputDialog(null, "Senha (letras e números): ");
 
                     // verificando o login e guardando a posição
-                    int posicaoCliente = logarCliente(login, senha);
+                    Cliente clienteLogado = logarCliente(login, senha);
 
-                    if (posicaoCliente >= 0) {
-                        JOptionPane.showMessageDialog(null, "Logado com sucesso no login " + listaClientes[posicaoCliente].getLogin());
+                    if (clienteLogado != null) {
+                        JOptionPane.showMessageDialog(null, "Logado com sucesso no login " + clienteLogado.getLogin());
                     }
                     else {
                         JOptionPane.showMessageDialog(null, "Ocorreu uma falha no login. Verifique se o login existe e se a senha esta correta");
                         break;
                     }
-
-                    Cliente clienteLogado = listaClientes[posicaoCliente];
 
                     // desenhando o menu de conta
                     int menuConta = 0;
@@ -140,24 +141,7 @@ public class Inicio {
                                 }
 
                                 // variavel para validar a transferencia
-                                boolean transferidoSucesso = false;
-
-                                // procurar a conta de destino
-                                for (int i = 0; i < listaClientes.length; i++) {
-                                    if (listaClientes[i] == null) { continue; }
-
-                                    // confirmando a agencia
-                                    if (listaClientes[i].getConta().getAgencia() == agenciaDestino) {
-                                        Conta contaDestino = listaClientes[i].getConta();
-
-                                        // convertendo o tipo da conta e transferindo o dinheiro para a conta de destino
-                                        ContaTipo2 contaClienteLogadoTransfeir = (ContaTipo2) clienteLogado.getConta();
-                                        contaClienteLogadoTransfeir.transferirDinheiro(contaDestino, transferirValor);
-                                        transferidoSucesso = true;
-
-                                        break;
-                                    }
-                                }
+                                boolean transferidoSucesso = transferirEntreClientes(clienteLogado, transferirValor, agenciaDestino);
                                 
                                 // validando transferencia
                                 if (transferidoSucesso) {
@@ -209,16 +193,11 @@ public class Inicio {
                     break;
                 case 3: // Listar Cadastros
                     String cadastros = "↓ login / agencia / tipo conta ↓\n";
-                    
-                    for (int i = 0; i < listaClientes.length; i++) {
-                        // pular se o login for vazio
-                        if (listaClientes[i] == null) {
-                            continue;
-                        }
 
-                        cadastros += listaClientes[i].getLogin() + "  /  ";
-                        cadastros += listaClientes[i].getConta().getAgencia() + "  /  Tipo: ";
-                        cadastros += listaClientes[i].getTipoConta() + "\n";
+                    for (Cliente cliente : listaClientes) {
+                        cadastros += cliente.getLogin() + "  /  ";
+                        cadastros += cliente.getConta().getAgencia() + "  /  Tipo: ";
+                        cadastros += cliente.getTipoConta() + "\n";
                     }
 
                     JOptionPane.showMessageDialog(null, cadastros);
@@ -240,10 +219,11 @@ public class Inicio {
         boolean cadastradoSucesso = false;
 
         // verificar se esta agencia ou cpf já existe
-        for (int i = 0; i < listaClientes.length; i++) {
-            if (listaClientes[i] == null) { continue; }
-            
-            if (agencia == listaClientes[i].getConta().getAgencia() || login.equalsIgnoreCase(listaClientes[i].getLogin())) {
+        for (Cliente cliente : listaClientes) {
+            boolean agenciaJaExiste = cliente.getConta().getAgencia() == agencia;
+            boolean loginJaExiste = login.equalsIgnoreCase(cliente.getLogin());
+
+            if (agenciaJaExiste || loginJaExiste) {
                 return cadastradoSucesso;
             }
         }
@@ -265,39 +245,55 @@ public class Inicio {
         Cliente cliente = new Cliente(login, senha, conta, tipoConta);
 
         // adiciona o cliente na lista de clientes
-        for (int i = 0; i < listaClientes.length; i++) {
-            if (listaClientes[i] == null) {
-                listaClientes[i] = cliente;
-                cadastradoSucesso = true;
-                break;
-            }
+        try {
+            listaClientes.add(cliente);
+            cadastradoSucesso = true;
+        } catch (Exception e) {
+            cadastradoSucesso = false;
         }
 
         return cadastradoSucesso;
     }
 
     // metodo para logar clientes existentes
-    public static int logarCliente(String login, String senha) {
+    public static Cliente logarCliente(String login, String senha) {
         // variavel de posição de login
-        int posicao = -1;
+        Cliente clienteLogado = null;
 
         // percorre a lista de clientes verificando o login e senha de cada cliente
-        for (int i = 0; i < listaClientes.length; i++) {
-            // pular se o espaço do array estiver vazio
-            if (listaClientes[i] == null) { continue; }
+        for (Cliente cliente : listaClientes) {
+            boolean loginConfere = cliente.getLogin().equalsIgnoreCase(login);
+            boolean senhaConfere = cliente.getSenha().equals(senha);
 
-            // confirmação de usuario e senha
-            boolean loginConfere = listaClientes[i].getLogin().equalsIgnoreCase(login);
-            boolean senhaConfere = listaClientes[i].getSenha().equals(senha);
-
-            // usuario e senha confirmado
             if (loginConfere && senhaConfere) {
-                posicao = i;
-                break;
+                clienteLogado = cliente;
             }
         }
 
-        return posicao;
+        return clienteLogado;
+    }
 
+    public static boolean transferirEntreClientes(Cliente clienteLogado, double transferirValor, int agenciaDestino) {
+        boolean transferidoSucesso = false;
+
+        for (Cliente cliente : listaClientes) {
+            boolean confirmaAgencia = cliente.getConta().getAgencia() == agenciaDestino;
+
+            if (confirmaAgencia) {
+                Conta contaDestino = cliente.getConta();
+
+                // convertendo o tipo da conta e transferindo o dinheiro para a conta de destino
+                try {
+                    ContaTipo2 contaClienteLogadoTransfeir = (ContaTipo2) clienteLogado.getConta();
+                    contaClienteLogadoTransfeir.transferirDinheiro(contaDestino, transferirValor);
+                    transferidoSucesso = true;
+                } catch (Exception e) {
+                    transferidoSucesso = false;
+                }
+                
+            }
+        }
+
+        return transferidoSucesso;
     }
 }
