@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import app.cliente.*;
-import app.conta.*;
+import app.cliente.Cliente;
+import app.conta.Conta;
+import app.conta.ContaTipo1;
+import app.conta.ContaTipo2;
 
 public class Inicio {
     // lista de clientes criada de modo global
@@ -18,17 +20,20 @@ public class Inicio {
         int menuEntrada = 0;
 
         do {
-            menuEntrada = Integer.parseInt(
-                JOptionPane.showInputDialog(
-                "OLÁ, BEM-VINDO(A) AO NOSSO SISTEMA BANCÁRIO!!\n" +
-                "\n" +
-                "Escolha um das opções abaixo: \n" +
-                "1 - Login \n" +
-                "2 - Registrar \n" +
-                "3 - Listar Cadastros\n" +
-                "0 - Sair"
-                )
-            );
+            try {
+                menuEntrada = Integer.parseInt(JOptionPane.showInputDialog(
+                    "OLÁ, BEM-VINDO(A) AO NOSSO SISTEMA BANCÁRIO!!\n" +
+                    "\n" +
+                    "Escolha um das opções abaixo: \n" +
+                    "1 - Login \n" +
+                    "2 - Registrar \n" +
+                    "3 - Listar Cadastros\n" +
+                    "0 - Sair"
+                ));
+            }
+            catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Entrada Inválida, selecionando 0 - Sair.");
+            }
 
             switch (menuEntrada) {
                 case 1: // Login
@@ -52,30 +57,47 @@ public class Inicio {
                     int menuConta = 0;
 
                     do {
-                        menuConta = Integer.parseInt(JOptionPane.showInputDialog(
-                        "Agencia: " + clienteLogado.getConta().getAgencia() + "\n" +
-                        "Tipo conta: " + clienteLogado.getTipoConta() + "\n" +
-                        "Login: " + clienteLogado.getLogin() + "\n" +
-                        "Saldo: " + clienteLogado.getConta().getSaldo() + "\n" +
-                        "\n" +
-                        "Escolha uma das Opções:\n" +
-                        "1 - Depositar\n" +
-                        "2 - Debitar\n" +
-                        "3 - Transferir\n" +
-                        "0 - Voltar"
-                        ));
+                        try {
+                            menuConta = Integer.parseInt(JOptionPane.showInputDialog(
+                                "Agencia: " + clienteLogado.getConta().getAgencia() + "\n" +
+                                "Tipo conta: " + clienteLogado.getTipoConta() + "\n" +
+                                "Login: " + clienteLogado.getLogin() + "\n" +
+                                "Saldo: " + clienteLogado.getConta().getSaldo() + "\n" +
+                                "\n" +
+                                "Escolha uma das Opções:\n" +
+                                "1 - Depositar\n" +
+                                "2 - Debitar\n" +
+                                "3 - Transferir\n" +
+                                "0 - Voltar"
+                            ));
+                        }
+                        catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null,
+                                "Entrada Inválida, selecionando 0 - Voltar."
+                            );
+                        }
 
                         switch (menuConta) {
                             case 1: // Depositar
-                                
+
+                                double depositoValor = 0;
                                 // valor à ser depositado
-                                double depositoValor = Double.parseDouble(
-                                    JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:")
-                                );
+                                try {
+                                    depositoValor = Double.parseDouble(
+                                        JOptionPane.showInputDialog("Digite o valor a ser depositado na conta:")
+                                    );
+                                }
+                                catch (NumberFormatException e) {
+                                    JOptionPane.showMessageDialog(null,
+                                        "Entrada Inválida, o valor para depósito precisa ser um número."
+                                    );
+                                }
 
                                 // verificando se o valor é menor que o limite mínimo
                                 if (depositoValor < 1.00) {
-                                    JOptionPane.showMessageDialog(null, "O limite mínimo para depósito é R$1.");
+                                    JOptionPane.showMessageDialog(null,
+                                        "O limite mínimo para depósito é R$1."
+                                    );
                                     break;
                                 }
 
@@ -83,8 +105,8 @@ public class Inicio {
                                 clienteLogado.getConta().depositarDinheiro(depositoValor);
 
                                 // mensagen de concluído
-                                JOptionPane.showMessageDialog(
-                                    null, "R$" + depositoValor + " depositado na conta " + clienteLogado.getConta().getAgencia() + "!"
+                                JOptionPane.showMessageDialog(null,
+                                    "R$" + depositoValor + " depositado na conta " + clienteLogado.getConta().getAgencia() + "!"
                                 );
 
                                 break;
@@ -95,12 +117,20 @@ public class Inicio {
                                     JOptionPane.showMessageDialog(null, "Você não pode debitar em uma conta tipo 2");
                                     break;
                                 }
-                                
+
                                 // valor a ser debitado
-                                double debitarValor = Double.parseDouble(JOptionPane.showInputDialog(
-                                    "Digite o valor a ser debitado da conta:"
-                                ));
-                                
+                                double debitarValor = 0;
+                                try {
+                                    debitarValor = Double.parseDouble(JOptionPane.showInputDialog(
+                                        "Digite o valor a ser debitado da conta:"
+                                    ));
+                                }
+                                catch (NumberFormatException e) {
+                                    JOptionPane.showMessageDialog(null,
+                                        "Entrada Inválida: O valor precisa ser numérico Voltando..."
+                                    );
+                                }
+
                                 // verificando se o valor digitado excede o valor em conta
                                 if (debitarValor > clienteLogado.getConta().getSaldo()) {
                                     JOptionPane.showMessageDialog(null, "Este valor excede o saldo da conta, tente outro.");
@@ -124,15 +154,24 @@ public class Inicio {
                                     JOptionPane.showMessageDialog(null, "Você não pode realizar transferência de uma conta tipo 1");
                                     break;
                                 }
-                                
-                                // agencia para qual será transferido o dinheiro
-                                int agenciaDestino = Integer.parseInt(JOptionPane.showInputDialog(
-                                    "Por favor, me informe a AGÊNCIA para qual você vai transferir o dinheiro: "
-                                ));
-                                // valor à ser transferido
-                                double transferirValor = Double.parseDouble(JOptionPane.showInputDialog(
-                                    "Agora, informe o valor a ser transferido: "
-                                ));
+
+                                int agenciaDestino = 0;
+                                double transferirValor = 0;
+                                try {
+                                    // agencia para qual será transferido o dinheiro
+                                    agenciaDestino = Integer.parseInt(JOptionPane.showInputDialog(
+                                        "Por favor, me informe a AGÊNCIA para qual você vai transferir o dinheiro: "
+                                    ));
+                                    // valor à ser transferido
+                                    transferirValor = Double.parseDouble(JOptionPane.showInputDialog(
+                                        "Agora, informe o valor a ser transferido: "
+                                    ));
+                                }
+                                catch (NumberFormatException e) {
+                                    JOptionPane.showMessageDialog(null,
+                                        "Entrada Inválida: O valor precisa ser numérico. Voltando..."
+                                    );
+                                }
 
                                 // verificando o saldo da conta
                                 if (transferirValor > clienteLogado.getConta().getSaldo()) {
@@ -142,7 +181,7 @@ public class Inicio {
 
                                 // variavel para validar a transferencia
                                 boolean transferidoSucesso = transferirEntreClientes(clienteLogado, transferirValor, agenciaDestino);
-                                
+
                                 // validando transferencia
                                 if (transferidoSucesso) {
                                     JOptionPane.showMessageDialog(
@@ -169,16 +208,37 @@ public class Inicio {
                 case 2: // Cadastrar
                     JOptionPane.showMessageDialog(null, "Cadastrando...");
 
-                    // escolher o tipo de conta
-                    int tipoConta = Integer.parseInt(JOptionPane.showInputDialog(
-                        "Tipo de Conta:" + "\n" +
-                        "1 - Conta Deposito e Saque" + "\n" +
-                        "2 - Conta Deposito e Transferencia"
-                    ));
-
                     String loginCadastro = JOptionPane.showInputDialog("Login (letras e números)");
                     String senhaCadastro = JOptionPane.showInputDialog("Senha (letras e números)");
-                    int agenciaCadastro = Integer.parseInt(JOptionPane.showInputDialog("Agência (4 dígitos)"));
+
+                    // escolher o tipo de conta
+                    int tipoConta = 0;
+                    int agenciaCadastro;
+                    try {
+                        while (true) {
+                            agenciaCadastro = Integer.parseInt(JOptionPane.showInputDialog("Agência (4 dígitos)"));
+                            int tamanhoAgencia = String.valueOf(agenciaCadastro).length();
+
+                            if (agenciaCadastro > 0 && tamanhoAgencia == 4) {
+                                break;
+                            }
+                            else {
+                                JOptionPane.showMessageDialog(null,
+                                    "O número da agencia precisa ter 4 dígitos e ser maior que zero."
+                                );
+                            }
+                        }
+
+                        tipoConta = Integer.parseInt(JOptionPane.showInputDialog(
+                            "Tipo de Conta:" + "\n" +
+                            "1 - Conta Deposito e Saque" + "\n" +
+                            "2 - Conta Deposito e Transferencia"
+                        ));
+                    }
+                    catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Operação Inválida, tente outra.");
+                        break;
+                    }
 
                     boolean cadastradoSucesso = cadastrarCliente(agenciaCadastro, loginCadastro, senhaCadastro, tipoConta);
 
@@ -240,7 +300,7 @@ public class Inicio {
         else {
             return cadastradoSucesso = false;
         }
-        
+
         // instanciar um cliente com a conta criada
         Cliente cliente = new Cliente(login, senha, conta, tipoConta);
 
@@ -290,7 +350,7 @@ public class Inicio {
                 } catch (Exception e) {
                     transferidoSucesso = false;
                 }
-                
+
             }
         }
 

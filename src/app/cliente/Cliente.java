@@ -1,6 +1,6 @@
 package app.cliente;
 
-import app.conta.*;
+import app.conta.Conta;
 
 public class Cliente {
     private Conta conta;
@@ -20,7 +20,7 @@ public class Cliente {
     }
 
     public void setConta(Conta conta) {
-       this.conta = conta;
+        this.conta = conta;
     }
 
     public String getLogin() {

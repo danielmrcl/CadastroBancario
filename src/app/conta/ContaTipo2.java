@@ -1,7 +1,6 @@
 package app.conta;
 
 public class ContaTipo2 extends Conta {
-
     public ContaTipo2(int agencia) {
         super(agencia);
     }
@@ -10,5 +9,4 @@ public class ContaTipo2 extends Conta {
         this.saldo -= valor;
         contaDestino.depositarDinheiro(valor);
     }
-    
 }
