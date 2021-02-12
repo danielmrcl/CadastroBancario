@@ -1,20 +1,13 @@
 package app;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.swing.JOptionPane;
 
 import app.cliente.Cliente;
-import app.conta.Conta;
 import app.conta.ContaTipo1;
-import app.conta.ContaTipo2;
+import app.cliente.GerenciarCliente;
+import app.conta.GerenciarConta;
 
 public class Inicio {
-    // lista de clientes criada de modo global
-    public static List<Cliente> listaClientes = new LinkedList<>();
-
-    // metodo principal
     public static void main(String[] args) {
 
         int menuEntrada = 0;
@@ -43,7 +36,7 @@ public class Inicio {
                     String senha = JOptionPane.showInputDialog(null, "Senha (letras e números): ");
 
                     // verificando o login e guardando a posição
-                    Cliente clienteLogado = logarCliente(login, senha);
+                    Cliente clienteLogado = GerenciarCliente.logarCliente(login, senha);
 
                     if (clienteLogado != null) {
                         JOptionPane.showMessageDialog(null, "Logado com sucesso no login " + clienteLogado.getLogin());
@@ -180,7 +173,7 @@ public class Inicio {
                                 }
 
                                 // variavel para validar a transferencia
-                                boolean transferidoSucesso = transferirEntreClientes(clienteLogado, transferirValor, agenciaDestino);
+                                boolean transferidoSucesso = GerenciarConta.transferirEntreClientes(clienteLogado, transferirValor, agenciaDestino);
 
                                 // validando transferencia
                                 if (transferidoSucesso) {
@@ -240,7 +233,7 @@ public class Inicio {
                         break;
                     }
 
-                    boolean cadastradoSucesso = cadastrarCliente(agenciaCadastro, loginCadastro, senhaCadastro, tipoConta);
+                    boolean cadastradoSucesso = GerenciarCliente.cadastrarCliente(agenciaCadastro, loginCadastro, senhaCadastro, tipoConta);
 
                     // confirmação de cadastro
                     if (cadastradoSucesso) {
@@ -254,7 +247,7 @@ public class Inicio {
                 case 3: // Listar Cadastros
                     String cadastros = "↓ login / agencia / tipo conta ↓\n";
 
-                    for (Cliente cliente : listaClientes) {
+                    for (Cliente cliente : GerenciarCliente.listaClientes) {
                         cadastros += cliente.getLogin() + "  /  ";
                         cadastros += cliente.getConta().getAgencia() + "  /  Tipo: ";
                         cadastros += cliente.getTipoConta() + "\n";
@@ -270,90 +263,5 @@ public class Inicio {
                     JOptionPane.showMessageDialog(null, "Operação Inválida, tente outra.");
             }
         } while (menuEntrada != 0);
-
-    }
-
-    // metodo para cadastrar clientes pf
-    public static boolean cadastrarCliente(int agencia, String login, String senha, int tipoConta) {
-        // variavel de confirmação de cadastro
-        boolean cadastradoSucesso = false;
-
-        // verificar se esta agencia ou cpf já existe
-        for (Cliente cliente : listaClientes) {
-            boolean agenciaJaExiste = cliente.getConta().getAgencia() == agencia;
-            boolean loginJaExiste = login.equalsIgnoreCase(cliente.getLogin());
-
-            if (agenciaJaExiste || loginJaExiste) {
-                return cadastradoSucesso;
-            }
-        }
-
-        // criar uma conta tipo 1 ou tipo 2 conforme passado por parâmetro
-        Conta conta;
-
-        if (tipoConta == 1) {
-            conta = new ContaTipo1(agencia);
-        }
-        else if (tipoConta == 2) {
-            conta = new ContaTipo2(agencia);
-        }
-        else {
-            return cadastradoSucesso = false;
-        }
-
-        // instanciar um cliente com a conta criada
-        Cliente cliente = new Cliente(login, senha, conta, tipoConta);
-
-        // adiciona o cliente na lista de clientes
-        try {
-            listaClientes.add(cliente);
-            cadastradoSucesso = true;
-        } catch (Exception e) {
-            cadastradoSucesso = false;
-        }
-
-        return cadastradoSucesso;
-    }
-
-    // metodo para logar clientes existentes
-    public static Cliente logarCliente(String login, String senha) {
-        // variavel de posição de login
-        Cliente clienteLogado = null;
-
-        // percorre a lista de clientes verificando o login e senha de cada cliente
-        for (Cliente cliente : listaClientes) {
-            boolean loginConfere = cliente.getLogin().equalsIgnoreCase(login);
-            boolean senhaConfere = cliente.getSenha().equals(senha);
-
-            if (loginConfere && senhaConfere) {
-                clienteLogado = cliente;
-            }
-        }
-
-        return clienteLogado;
-    }
-
-    public static boolean transferirEntreClientes(Cliente clienteLogado, double transferirValor, int agenciaDestino) {
-        boolean transferidoSucesso = false;
-
-        for (Cliente cliente : listaClientes) {
-            boolean confirmaAgencia = cliente.getConta().getAgencia() == agenciaDestino;
-
-            if (confirmaAgencia) {
-                Conta contaDestino = cliente.getConta();
-
-                // convertendo o tipo da conta e transferindo o dinheiro para a conta de destino
-                try {
-                    ContaTipo2 contaClienteLogadoTransfeir = (ContaTipo2) clienteLogado.getConta();
-                    contaClienteLogadoTransfeir.transferirDinheiro(contaDestino, transferirValor);
-                    transferidoSucesso = true;
-                } catch (Exception e) {
-                    transferidoSucesso = false;
-                }
-
-            }
-        }
-
-        return transferidoSucesso;
     }
 }
