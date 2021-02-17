@@ -1,7 +1,6 @@
 package app.conta;
 
 public abstract class Conta {
-
     private int agencia;
     protected double saldo;
 
